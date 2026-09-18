@@ -1,0 +1,32 @@
+:root {
+  --bg: #0f1419;
+  --card: #1a2029;
+  --text: #e6edf3;
+  --muted: #8b98a5;
+  --accent: #4ab0f5;
+  --warn: #f5b04a;
+  --danger: #f55a4a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+#sys-info {
+  margin: 2px 0 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
