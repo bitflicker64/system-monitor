@@ -1,3 +1,6 @@
+const {
+  powerMonitor,
+} = require('electron');
 const os = require('os');
 
 const POLL_MS = 1000;
@@ -28,4 +31,16 @@ function sampleCpu() {
   const totalDiff = now.total - prevCpu.total;
   prevCpu = now;
   return totalDiff > 0 ? (1 - idleDiff / totalDiff) * 100 : 0;
+}
+
+function sampleStats() {
+  const total = os.totalmem();
+  const used = total - os.freemem();
+  return {
+    cpu: sampleCpu(),
+    ram: { used, total, percent: (used / total) * 100 },
+    onBattery: powerMonitor.isOnBatteryPower(),
+    uptime: os.uptime(),
+    ts: Date.now(),
+  };
 }
