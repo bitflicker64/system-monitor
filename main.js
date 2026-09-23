@@ -1,7 +1,9 @@
 const {
+  BrowserWindow,
   powerMonitor,
 } = require('electron');
 const os = require('os');
+const path = require('path');
 
 const POLL_MS = 1000;
 const ALERT_COOLDOWN_MS = 60 * 1000;
@@ -43,4 +45,27 @@ function sampleStats() {
     uptime: os.uptime(),
     ts: Date.now(),
   };
+}
+
+function createWindow() {
+  win = new BrowserWindow({
+    width: 520,
+    height: 640,
+    title: 'System Monitor',
+    backgroundColor: '#0f1419',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+  win.loadFile(path.join(__dirname, 'renderer', 'index.html'));
+
+  // Closing the window hides it to the tray instead of quitting.
+  win.on('close', (e) => {
+    if (!isQuitting) {
+      e.preventDefault();
+      win.hide();
+    }
+  });
 }
