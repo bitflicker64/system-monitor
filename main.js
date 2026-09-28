@@ -1,6 +1,10 @@
 const {
+  app,
   BrowserWindow,
+  Tray,
+  Menu,
   powerMonitor,
+  nativeImage,
 } = require('electron');
 const os = require('os');
 const path = require('path');
@@ -68,4 +72,42 @@ function createWindow() {
       win.hide();
     }
   });
+}
+
+function showWindow() {
+  if (!win) return createWindow();
+  win.show();
+  win.focus();
+}
+
+// Draws a small solid square so the tray has an icon on every platform.
+function buildTrayIcon() {
+  const size = 16;
+  const buf = Buffer.alloc(size * size * 4);
+  for (let i = 0; i < size * size; i++) {
+    buf[i * 4 + 0] = 0xf5; // B
+    buf[i * 4 + 1] = 0xb0; // G
+    buf[i * 4 + 2] = 0x4a; // R
+    buf[i * 4 + 3] = 0xff; // A
+  }
+  return nativeImage.createFromBitmap(buf, { width: size, height: size });
+}
+
+function createTray() {
+  tray = new Tray(buildTrayIcon());
+  tray.setToolTip('System Monitor');
+  tray.setContextMenu(
+    Menu.buildFromTemplate([
+      { label: 'Show Monitor', click: showWindow },
+      { type: 'separator' },
+      {
+        label: 'Quit',
+        click: () => {
+          isQuitting = true;
+          app.quit();
+        },
+      },
+    ])
+  );
+  tray.on('click', showWindow);
 }
