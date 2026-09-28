@@ -123,3 +123,18 @@ function maybeAlert(stats) {
     body: `RAM is at ${stats.ram.percent.toFixed(0)}% (limit ${ramThreshold}%).`,
   }).show();
 }
+
+function startPolling() {
+  setInterval(() => {
+    const stats = sampleStats();
+
+    // Main -> renderer push.
+    if (win && !win.isDestroyed()) win.webContents.send('stats:update', stats);
+
+    if (tray) {
+      tray.setToolTip(`CPU ${stats.cpu.toFixed(0)}%  |  RAM ${stats.ram.percent.toFixed(0)}%`);
+      if (process.platform === 'darwin') tray.setTitle(`${stats.cpu.toFixed(0)}%`);
+    }
+    maybeAlert(stats);
+  }, POLL_MS);
+}
