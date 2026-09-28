@@ -3,6 +3,7 @@ const {
   BrowserWindow,
   Tray,
   Menu,
+  Notification,
   powerMonitor,
   nativeImage,
 } = require('electron');
@@ -110,4 +111,15 @@ function createTray() {
     ])
   );
   tray.on('click', showWindow);
+}
+
+function maybeAlert(stats) {
+  const now = Date.now();
+  if (stats.ram.percent < ramThreshold || now - lastAlertAt < ALERT_COOLDOWN_MS) return;
+  if (!Notification.isSupported()) return;
+  lastAlertAt = now;
+  new Notification({
+    title: 'High memory usage',
+    body: `RAM is at ${stats.ram.percent.toFixed(0)}% (limit ${ramThreshold}%).`,
+  }).show();
 }
