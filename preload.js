@@ -4,4 +4,6 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('monitor', {
   getInfo: () => ipcRenderer.invoke('system:info'),
   setThreshold: (value) => ipcRenderer.invoke('alerts:set-threshold', value),
+  onStats: (cb) => ipcRenderer.on('stats:update', (_e, stats) => cb(stats)),
+  onPowerEvent: (cb) => ipcRenderer.on('power:event', (_e, evt) => cb(evt)),
 });
