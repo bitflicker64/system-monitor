@@ -27,3 +27,18 @@ function drawChart() {
   });
   ctx.stroke();
 }
+
+function renderStats(stats) {
+  $('cpu-value').textContent = `${stats.cpu.toFixed(0)}%`;
+  setBar($('cpu-bar'), stats.cpu);
+
+  cpuHistory.push(stats.cpu);
+  if (cpuHistory.length > HISTORY_LEN) cpuHistory.shift();
+  drawChart();
+
+  $('ram-value').textContent = `${stats.ram.percent.toFixed(0)}%`;
+  setBar($('ram-bar'), stats.ram.percent);
+  $('ram-detail').textContent = `${gb(stats.ram.used)} GB of ${gb(stats.ram.total)} GB used`;
+
+  $('power-source').textContent = stats.onBattery ? 'Running on battery' : 'Plugged in';
+}
