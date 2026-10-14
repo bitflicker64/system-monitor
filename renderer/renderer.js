@@ -42,3 +42,16 @@ function renderStats(stats) {
 
   $('power-source').textContent = stats.onBattery ? 'Running on battery' : 'Plugged in';
 }
+
+let hasEvents = false;
+
+function logEvent({ event, ts }) {
+  const list = $('events');
+  if (!hasEvents) {
+    list.innerHTML = '';
+    hasEvents = true;
+  }
+  const li = document.createElement('li');
+  li.textContent = `${new Date(ts).toLocaleTimeString()}  ${event}`;
+  list.prepend(li);
+}
