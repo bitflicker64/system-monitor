@@ -55,3 +55,17 @@ function logEvent({ event, ts }) {
   li.textContent = `${new Date(ts).toLocaleTimeString()}  ${event}`;
   list.prepend(li);
 }
+
+// Battery level is only exposed to the renderer by Chromium, not to the main process.
+async function initBattery() {
+  if (!navigator.getBattery) {
+    $('battery-value').textContent = 'n/a';
+    return;
+  }
+  const battery = await navigator.getBattery();
+  const update = () => {
+    $('battery-value').textContent = `${Math.round(battery.level * 100)}%`;
+  };
+  update();
+  battery.addEventListener('levelchange', update);
+}
