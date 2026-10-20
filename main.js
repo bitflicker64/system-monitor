@@ -6,6 +6,7 @@ const {
   Notification,
   powerMonitor,
   nativeImage,
+  ipcMain,
 } = require('electron');
 const os = require('os');
 const path = require('path');
@@ -150,3 +151,21 @@ function watchPower() {
     powerMonitor.on(event, forward(event));
   }
 }
+
+// Renderer -> main request/response.
+ipcMain.handle('system:info', () => ({
+  hostname: os.hostname(),
+  platform: `${os.type()} ${os.release()}`,
+  arch: os.arch(),
+  cpuModel: os.cpus()[0]?.model ?? 'unknown',
+  cores: os.cpus().length,
+  threshold: ramThreshold,
+}));
+
+ipcMain.handle('alerts:set-threshold', (_event, value) => {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n < 1 || n > 100) throw new Error('threshold must be 1-100');
+  ramThreshold = n;
+  lastAlertAt = 0;
+  return ramThreshold;
+});
