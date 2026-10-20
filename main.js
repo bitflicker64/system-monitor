@@ -138,3 +138,15 @@ function startPolling() {
     maybeAlert(stats);
   }, POLL_MS);
 }
+
+// Forward power events (sleep, resume, AC/battery) to the UI event log.
+function watchPower() {
+  const forward = (event) => () => {
+    if (win && !win.isDestroyed()) {
+      win.webContents.send('power:event', { event, ts: Date.now() });
+    }
+  };
+  for (const event of ['suspend', 'resume', 'on-ac', 'on-battery', 'lock-screen', 'unlock-screen']) {
+    powerMonitor.on(event, forward(event));
+  }
+}
