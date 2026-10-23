@@ -69,3 +69,24 @@ async function initBattery() {
   update();
   battery.addEventListener('levelchange', update);
 }
+
+async function init() {
+  const info = await window.monitor.getInfo();
+  $('sys-info').textContent = `${info.hostname} · ${info.platform} · ${info.cpuModel} (${info.cores} cores)`;
+  $('threshold').value = info.threshold;
+  $('threshold-value').textContent = `${info.threshold}%`;
+
+  $('threshold').addEventListener('change', async (e) => {
+    const applied = await window.monitor.setThreshold(e.target.value);
+    $('threshold-value').textContent = `${applied}%`;
+  });
+  $('threshold').addEventListener('input', (e) => {
+    $('threshold-value').textContent = `${e.target.value}%`;
+  });
+
+  window.monitor.onStats(renderStats);
+  window.monitor.onPowerEvent(logEvent);
+  initBattery();
+}
+
+init();
