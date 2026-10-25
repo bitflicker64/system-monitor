@@ -169,3 +169,19 @@ ipcMain.handle('alerts:set-threshold', (_event, value) => {
   lastAlertAt = 0;
   return ramThreshold;
 });
+
+app.whenReady().then(() => {
+  createWindow();
+  createTray();
+  watchPower();
+  startPolling();
+
+  app.on('activate', showWindow);
+});
+
+app.on('before-quit', () => {
+  isQuitting = true;
+});
+
+// Keep running in the tray when all windows are closed.
+app.on('window-all-closed', () => {});
